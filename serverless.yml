@@ -13,7 +13,7 @@ custom:
   tableName: blobs
 
 functions:
-  hello:
+  createBlob:
     handler: handler.hello
     events:
       - http:
@@ -22,6 +22,10 @@ functions:
 
 resources:
   Resources:
+    blobsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: reko-blobs-bucket
     blobsTable:
       Type: AWS::DynamoDB::Table
       Properties:
