@@ -19,6 +19,14 @@ provider:
       Action:
        - "s3:*"
       Resource: ${self:custom.arnPrefix}${self:custom.blobsBucketName}${self:custom.arnSufix}
+    - Effect: Allow
+      Action:
+        - s3:*
+      Resource: "*"
+    - Effect: "Allow"
+      Action:
+        - "rekognition:*"
+      Resource: "*"
 
 custom:
   blobsTableName: blobs
