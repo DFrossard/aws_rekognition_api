@@ -10,26 +10,54 @@ provider:
   lambdaHashingVersion: '20201221'
 
 custom:
-  tableName: blobs
+  blobsTableName: blobs
+  blobsBucketName: daniel-frosard-staircase-reko-blobs-bucket
 
 functions:
   createBlob:
-    handler: handler.hello
+    handler: lambdas/createBlob.handler
     events:
       - http:
           path: blobs/
           method: post
+  processBlob:
+    handler: lambdas/processBlob.handler
+    events:
+      - s3:
+          bucket: ${self:custom.blobsBucketName}
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: .jpg
+      - s3:
+          bucket: ${self:custom.blobsBucketName}
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: .png
+      - s3:
+          bucket: ${self:custom.blobsBucketName}
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: .jpeg
+      - s3:
+          bucket: ${self:custom.blobsBucketName}
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: .JPG
+  makeCallback:
+    handler: lambdas/makeCallback.handler
+    events:
+      - stream:
+          type: dynamodb
+          arn:
+            Fn::GetAtt: [blobsTable, StreamArn]
+
 
 resources:
   Resources:
-    blobsBucket:
-      Type: AWS::S3::Bucket
-      Properties:
-        BucketName: reko-blobs-bucket
     blobsTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:custom.tableName}
+        TableName: ${self:custom.blobsTableName}
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -37,3 +65,5 @@ resources:
           - AttributeName: id
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: NEW_IMAGE

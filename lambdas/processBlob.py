@@ -1,9 +1,9 @@
 import json
 
 
-def hello(event, context):
+def handler(event, context):
     body = {
-        "message": "Go Serverless v2.0! Your function executed successfully!",
+        "message": "This is processBlob",
         "input": event,
     }
 
