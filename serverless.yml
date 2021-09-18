@@ -8,10 +8,23 @@ provider:
   name: aws
   runtime: python3.8
   lambdaHashingVersion: '20201221'
+  environment:
+    bucketName: ${self:custom.blobsBucketName}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource: '*'
+    - Effect: "Allow"
+      Action:
+       - "s3:*"
+      Resource: ${self:custom.arnPrefix}${self:custom.blobsBucketName}${self:custom.arnSufix}
 
 custom:
   blobsTableName: blobs
   blobsBucketName: daniel-frosard-staircase-reko-blobs-bucket
+  arnPrefix: 'arn:aws:s3:::'
+  arnSufix: '/*'
 
 functions:
   getBlobInfo:
