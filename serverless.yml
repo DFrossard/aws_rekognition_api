@@ -14,6 +14,12 @@ custom:
   blobsBucketName: daniel-frosard-staircase-reko-blobs-bucket
 
 functions:
+  getBlobInfo:
+    handler: lambdas/getBlobInfo.handler
+    events:
+      - http:
+          path: blobs/
+          method: get
   createBlob:
     handler: lambdas/createBlob.handler
     events:
