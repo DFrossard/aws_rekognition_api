@@ -5,6 +5,7 @@ import logging
 import boto3
 import re
 from botocore.exceptions import ClientError
+from commom.dynamodb import DynamoDB
 
 def handler(event, context):
     logging.info("Starting createBlob")
@@ -32,7 +33,8 @@ def handler(event, context):
     presign_url = create_presigned_post(bucket, img_bucket_path)
 
     dynamo = DynamoDB()
-    dynamo_response = dynamo.put_object(id, callback_url, image_file_name)
+    dynamo_item = create_dynamo_item(id, callback_url, image_file_name)
+    dynamo_response = dynamo.put_item(dynamo_item)
 
     response_status_code = dynamo_response['ResponseMetadata']['HTTPStatusCode']
     if response_status_code != 200:
@@ -76,16 +78,8 @@ def _500_response(message):
     return response
 
 def generate_unique_id():
-    return str(uuid.uuid4())    
-    
-    
+    return str(uuid.uuid4())
 
-class DynamoDB:
-    def __init__(self):
-        self.dynamo_client = boto3.client('dynamodb')
-        self.table_name = os.environ['tableName']
-
-    def put_object(self, id, callback_url, image_file_name):
-        dynamo_item = {'id': {'S': id}, 'callback_url': {'S': callback_url}, 'image_file_name': {'S': image_file_name}}
-        response = self.dynamo_client.put_item(TableName=self.table_name, Item=dynamo_item)
-        return response
+def create_dynamo_item(id, callback_url, image_file_name):
+    dynamo_item = {'id': {'S': id}, 'callback_url': {'S': callback_url}, 'image_file_name': {'S': image_file_name}}
+    return dynamo_item
