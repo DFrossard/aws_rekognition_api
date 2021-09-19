@@ -10,6 +10,7 @@ provider:
   lambdaHashingVersion: '20201221'
   environment:
     bucketName: ${self:custom.blobsBucketName}
+    tableName: ${self:custom.blobsTableName}
   iamRoleStatements:
     - Effect: Allow
       Action:
