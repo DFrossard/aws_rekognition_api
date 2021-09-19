@@ -11,7 +11,9 @@ def handler(event, context):
     formatted_labels = format_labels(labels)
 
     id = image_key.split('/')[0]
-    save_response = save_labels(formatted_labels, id)
+    blob = retrieve_item(id)
+    blob_item = blob['Item']
+    save_response = save_labels(formatted_labels, blob_item)
     status_code = save_response['ResponseMetadata']['HTTPStatusCode']
     response = {"statusCode": status_code, "body": json.dumps(save_response)}
 
@@ -32,17 +34,24 @@ def format_labels(labels):
         l.pop("Parents")
     return formatted_labels
 
-def save_labels(labels, id):
+def retrieve_item(id):
     dynamo = DynamoDB()
-    updated_dynamo_item = generate_updated_dynamo_item(labels, id)
+    blob = dynamo.get_item({'id': {'S': id}})
+    return blob
+
+def save_labels(labels, blob_item):
+    dynamo = DynamoDB()
+    updated_dynamo_item = generate_updated_dynamo_item(labels, blob_item)
     dynamo_response = dynamo.put_item(updated_dynamo_item)
     return dynamo_response
 
-def generate_updated_dynamo_item(labels, id):
+def generate_updated_dynamo_item(labels, blob_item):
+    new_blob = blob_item
     labels_dynamo_item = {'L': []}
     for l in labels["Labels"]:
         label_name = l['Name']
         label_confidence = str(l['Confidence'])
         label = {"M": {"label": {"S": label_name}, "Confidence": {"N": label_confidence}}}
         labels_dynamo_item["L"].append(label)
-    return {'id': {'S': id}, 'labels': labels_dynamo_item}
+    new_blob['labels'] = labels_dynamo_item
+    return new_blob
