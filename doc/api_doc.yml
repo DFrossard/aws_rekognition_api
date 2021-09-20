@@ -1,0 +1,108 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: AWS Rekognition API
+servers:
+  - url: http://fakeurl.com
+paths:
+  /blobs:
+    post:
+      summary: Creates a blob in DynamoDB and return presigned url to upload image which will be analysed
+      operationId: createBlob
+      responses:
+        '200':
+          description: Confirmation with presigned url to upload image to AWS S3
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Blobs"
+        '400':
+          description: No fields found on request body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequest"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /blobs/{id}:
+    get:
+      summary: Retrieve blob information
+      operationId: getBlob
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the blob to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful retrive of Blob object information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Blob"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Blobs:
+      type: object
+      required:
+        - image_file_name
+      properties:
+        image_file_name:
+          type: string
+        callback_url:
+          type: string
+    Blob:
+      type: object
+      required:
+        - id
+        - callback_url
+        - image_file_name
+        - labels
+      properties:
+        id:
+          type: string
+        callback_url:
+          type: string
+        image_file_name:
+          type: string
+        labels:
+          type: object
+          items:
+            $ref: "#/components/schemas/Label"
+    Label:
+      type: object
+      required:
+        - Confidence
+        - labels
+      properties:
+        Confidence:
+          type: number
+          format: float
+        labels:
+          type: string
+    BadRequest:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
