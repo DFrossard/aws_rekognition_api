@@ -15,7 +15,13 @@ class Responses:
         response = {"statusCode": 400, "body": json.dumps(body)}
         return response
 
+    def _404_response(self, id):
+        body = {"message": f"id {id} not found"}
+        response = {"statusCode": 404, "body": json.dumps(body)}
+        return response
+
     def _500_response(self, message):
         body = {"message": message}
         response = {"statusCode": 500, "body": json.dumps(body)}
         return response
+    

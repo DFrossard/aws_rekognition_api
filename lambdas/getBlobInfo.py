@@ -14,11 +14,14 @@ def handler(event, context):
 
     id = query_params['id']
     blob_response = get_blob(id)
-    
+    if not 'Item' in blob_response:
+        return responses._404_response(id)
+    print(blob_response)
     if blob_response['ResponseMetadata']['HTTPStatusCode'] != 200:
         return responses._500_response("Failed to retrieve data from database")
 
     deserializer = BlobDeserializer()
+    
     body = deserializer.deserialize_dynamo_blob(blob_response['Item'])
     
     response = {"statusCode": 200, "body": json.dumps(body)}
