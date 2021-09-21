@@ -11,6 +11,8 @@ provider:
   environment:
     bucketName: ${self:custom.blobsBucketName}
     tableName: ${self:custom.blobsTableName}
+    maxLabels: 5
+    minConfidence: 80
   iamRoleStatements:
     - Effect: Allow
       Action:

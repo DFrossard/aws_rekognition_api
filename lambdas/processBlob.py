@@ -1,5 +1,4 @@
 import os
-import json
 import logging
 import boto3
 import botocore
@@ -45,7 +44,7 @@ def handler(event, context):
 def get_labels(bucket, image_key):
     client = boto3.client("rekognition")
     try:
-        labels_response = client.detect_labels(Image = {"S3Object": {"Bucket": bucket, "Name": image_key}}, MaxLabels=5,  MinConfidence=80)
+        labels_response = client.detect_labels(Image = {"S3Object": {"Bucket": bucket, "Name": image_key}}, MaxLabels=int(os.environ['maxLabels']),  MinConfidence=int(os.environ['minConfidence']))
     except botocore.exceptions.ClientError as error:
         raise error
     return labels_response
