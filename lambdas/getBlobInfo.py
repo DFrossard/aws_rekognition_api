@@ -6,12 +6,15 @@ from commom.blob_dynamo_deserializer import BlobDeserializer
 def handler(event, context):
     responses = Responses()
     query_params = event['queryStringParameters']
-    if not 'id' in query_params:
-        return responses._400_response("id parameter not found. Please provide 'id' parameter on url query string")
+    if type(query_params) != type(None):
+        if not 'id' in query_params:
+            return responses._400_response("id parameter not found. Please provide 'id' parameter on url query string")
+    else:
+        return responses._400_response("No query string parameter provided. Please provide 'id' parameter on url query string")
+
     id = query_params['id']
-
     blob_response = get_blob(id)
-
+    
     if blob_response['ResponseMetadata']['HTTPStatusCode'] != 200:
         return responses._500_response("Failed to retrieve data from database")
 
