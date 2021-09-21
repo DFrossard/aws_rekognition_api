@@ -4,8 +4,6 @@ import requests
 from commom.blob_dynamo_deserializer import BlobDeserializer
 
 def handler(event, context):
-    print(event)
-
     records = event['Records']
 
     for record in records:
@@ -26,8 +24,6 @@ def send_callback(record):
 def send_callback_request(blob):
     url = blob['callback_url']
     data = blob
-    print("data")
-    print(data)
     try:
         request = requests.post(url= url, data= json.dumps(data))
     except BaseException as er:
