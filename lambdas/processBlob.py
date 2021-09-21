@@ -36,8 +36,8 @@ def handler(event, context):
         msg = f"Error while detecting image labels on image {image_key}"
         logging.error(msg)
         return responses._500_response(msg)
-    status_code = save_response['ResponseMetadata']['HTTPStatusCode']
-    response = responses._200_response(f"Image {image_key} processed")
+    body = {"message": f"Image {image_key} processed"}
+    response = responses._200_response(body)
 
 
     return response

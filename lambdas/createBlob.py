@@ -42,8 +42,8 @@ def handler(event, context):
     if response_status_code != 200:
         return responses._500_response("Failed to save to database.")
 
-    message = "Created blob"
-    return responses._200_response(message, id=id, image_file_name=image_file_name, presign_url=presign_url)
+    body = {"message": "Created blob", "id": id, "image_file_name": image_file_name, "presign_url": presign_url}
+    return responses._200_response(body)
 
 def create_presigned_post(bucket_name, object_name, fields=None, conditions=None, expiration=3600):
     s3_client = boto3.client('s3')
@@ -63,8 +63,6 @@ def validate_image_file_name(img_id):
     if(re.search(pattern, img_id)):
         return True
     return False
-
-
 
 def generate_unique_id():
     return str(uuid.uuid4())
